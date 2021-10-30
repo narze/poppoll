@@ -21,7 +21,7 @@
     "https://raw.githubusercontent.com/narze/timelapse/master/projects/single-page-svelte_home.png"
   const gtagId = null
 
-  let pollStartTime,
+  let pollStartTime: Date,
     formattedValue,
     pollName: string,
     pollTime: number = 1,
@@ -35,17 +35,19 @@
     },
   }
 
-  $: console.log({ pollStartTime, formattedValue })
+  // $: console.log({ pollStartTime, formattedValue })
 
-  function handleChange(event) {
-    const [selectedDates, dateStr] = event.detail
-    console.log({ selectedDates, dateStr })
-  }
+  // function handleChange(event) {
+  //   const [selectedDates, dateStr] = event.detail
+  //   console.log({ selectedDates, dateStr })
+  // }
 
-  function handleSubmit(event) {
-    event.preventDefault()
+  function handleSubmit(e) {
+    e.preventDefault()
 
-    console.log(event.target.elements["date"].value)
+    const pollEndTime = new Date(pollStartTime.getTime() + pollTime * 60000)
+
+    console.log({ pollName, pollEndTime, pollOptions, pollStartTime })
   }
 
   function addOption() {
@@ -88,7 +90,6 @@
         {options}
         bind:value={pollStartTime}
         bind:formattedValue
-        on:change={handleChange}
         placeholder="Time"
         name="start-time"
         class="w-60 border rounded text-center px-2"
