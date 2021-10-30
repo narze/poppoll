@@ -4,6 +4,7 @@
   import slocation from "slocation"
   import dayjs from "dayjs"
   import relativeTime from "dayjs/plugin/relativeTime"
+  import baseUrl from "./lib/constants"
 
   dayjs.extend(relativeTime)
 
@@ -66,7 +67,7 @@
     clearInterval(sendResultInterval)
   })
   ;(async () => {
-    const { data } = await axios.get(`http://localhost:8787/polls/${id}`, {
+    const { data } = await axios.get(`${baseUrl}/polls/${id}`, {
       headers: {
         "Access-Control-Allow-Origin": "*",
       },
@@ -98,7 +99,7 @@
     optionsCount = optionsDefault
 
     const { data } = await axios.post(
-      `http://localhost:8787/polls/${id}/pop`,
+      `${baseUrl}/polls/${id}/pop`,
       {
         data: payload,
       },

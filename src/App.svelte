@@ -13,6 +13,7 @@
   import Menu from "./lib/Menu.svelte"
   import Social from "./lib/Social.svelte"
   import PollPage from "./PollPage.svelte"
+  import baseUrl from "./lib/constants"
 
   const url = "https://single-page-svelte.vercel.app"
   const title = "PopPoll"
@@ -28,17 +29,22 @@
   let pollStartTime,
     formattedPollStartTime = dayjs().local().format("YYYY-MM-DDTHH:mm"),
     pollName: string,
-    pollTime: number = 1,
+    pollTime: number = 5,
     pollOptions: string[] = ["", ""],
     canRemoveOption: boolean = false
 
   async function handleSubmit(e) {
     e.preventDefault()
 
+    if (!validateInputs()) {
+      alert("Invalid inputs")
+      return
+    }
+
     const pollEndTime = new Date(pollStartTime.getTime() + pollTime * 60000)
 
     const { data } = await axios.post(
-      "http://localhost:8787/polls",
+      `${baseUrl}/polls`,
       {
         name: pollName,
         start_at: pollStartTime,
@@ -55,6 +61,18 @@
     const key = data.key
 
     location.hash = `#/polls/${key}`
+  }
+
+  function validateInputs() {
+    if (!pollName || !pollStartTime || !pollOptions.length) {
+      return false
+    }
+
+    if (pollOptions.filter((option) => option.trim().length === 0).length) {
+      return false
+    }
+
+    return true
   }
 
   function addOption() {
@@ -123,7 +141,12 @@
         <div class="flex flex-col gap-2">
           {#each pollOptions as option, idx (idx)}
             <span>
-              <input type="text" class="w-60 border rounded text-center px-2" bind:value={option} />
+              <input
+                type="text"
+                class="w-60 border rounded text-center px-2"
+                bind:value={option}
+                placeholder={`Option ${idx + 1}`}
+              />
               {#if canRemoveOption}
                 <button
                   class="w-6 border rounded bg-red-200 border-red-300"
