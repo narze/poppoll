@@ -4,7 +4,7 @@
   import slocation from "slocation"
   import dayjs from "dayjs"
   import relativeTime from "dayjs/plugin/relativeTime"
-  import baseUrl from "./lib/constants"
+  import { allowOrigin, workersUrl } from "./lib/constants"
 
   dayjs.extend(relativeTime)
 
@@ -59,7 +59,7 @@
       } else if (isStarted) {
         sendResult()
       }
-    }, 10000)
+    }, 5000)
   }
 
   onDestroy(() => {
@@ -67,9 +67,9 @@
     clearInterval(sendResultInterval)
   })
   ;(async () => {
-    const { data } = await axios.get(`${baseUrl}/polls/${id}`, {
+    const { data } = await axios.get(`${workersUrl}/polls/${id}`, {
       headers: {
-        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Origin": allowOrigin,
       },
     })
 
@@ -103,13 +103,13 @@
     optionsCount = optionsDefault
 
     const { data } = await axios.post(
-      `${baseUrl}/polls/${id}/pop`,
+      `${workersUrl}/polls/${id}/pop`,
       {
         data: payload,
       },
       {
         headers: {
-          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Origin": allowOrigin,
         },
       }
     )

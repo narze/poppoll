@@ -1,3 +1,4 @@
-const baseUrl = "https://poppoll-worker.narze.workers.dev"
+const workersUrl = "https://poppoll.narze.workers.dev"
+const allowOrigin = "https://poppoll.pages.dev"
 
-export default baseUrl
+export { workersUrl, allowOrigin }

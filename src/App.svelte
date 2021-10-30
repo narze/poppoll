@@ -13,7 +13,7 @@
   import Menu from "./lib/Menu.svelte"
   import Social from "./lib/Social.svelte"
   import PollPage from "./PollPage.svelte"
-  import baseUrl from "./lib/constants"
+  import { workersUrl, allowOrigin } from "./lib/constants"
 
   const url = "https://poppoll.pages.dev"
   const title = "PopPoll"
@@ -44,7 +44,7 @@
     const pollEndTime = new Date(pollStartTime.getTime() + pollTime * 60000)
 
     const { data } = await axios.post(
-      `${baseUrl}/polls`,
+      `${workersUrl}/polls`,
       {
         name: pollName,
         start_at: pollStartTime,
@@ -53,7 +53,7 @@
       },
       {
         headers: {
-          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Origin": allowOrigin,
         },
       }
     )
@@ -156,8 +156,10 @@
               {/if}
             </span>
           {/each}
-          <button type="button" class="w-60 border rounded bg-green-200 border-green-300" on:click={addOption}
-            >+ Add new option</button
+          <button
+            type="button"
+            class="w-60 border rounded bg-green-200 border-green-300"
+            on:click={addOption}>+ Add new option</button
           >
         </div>
       </div>
