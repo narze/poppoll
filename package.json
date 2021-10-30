@@ -32,6 +32,7 @@
     "vite": "^2.6.13"
   },
   "dependencies": {
+    "svelte-flatpickr": "^3.2.3",
     "svelte-share-buttons-component": "^1.4.0",
     "twind": "^0.16.16"
   }

@@ -1,6 +1,10 @@
 <script lang="ts">
   import "twind/shim"
   import { tw } from "twind"
+
+  import Flatpickr from "svelte-flatpickr"
+  import "flatpickr/dist/flatpickr.css"
+
   import logo from "./assets/svelte.png"
   import Head from "./lib/Head.svelte"
   import Kofi from "./lib/Kofi.svelte"
@@ -16,6 +20,31 @@
   const imageUrl =
     "https://raw.githubusercontent.com/narze/timelapse/master/projects/single-page-svelte_home.png"
   const gtagId = null
+
+  let pollStartTime,
+    formattedValue,
+    pollName: string,
+    pollTime: number = 1
+
+  const options = {
+    enableTime: true,
+    onChange(selectedDates, dateStr) {
+      console.log("flatpickr hook", selectedDates, dateStr)
+    },
+  }
+
+  $: console.log({ pollStartTime, formattedValue })
+
+  function handleChange(event) {
+    const [selectedDates, dateStr] = event.detail
+    console.log({ selectedDates, dateStr })
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault()
+
+    console.log(event.target.elements["date"].value)
+  }
 </script>
 
 <Kofi name="narze" label="Support Me" />
@@ -23,10 +52,45 @@
 <Social {url} {title} />
 <Head {title} {description} {url} {imageUrl} {gtagId} />
 
-<main class="w-full h-screen flex flex-col justify-center items-center">
-  <h1 class="text-6xl text-green-400 flex flex-col">
-    <span>Single</span><span>Page</span><span>Svelte</span>
-  </h1>
+<main class="w-full h-screen flex flex-col gap-4 justify-center items-center">
+  <h1 class="text-6xl text-green-400 flex flex-col">PopPoll</h1>
+
+  <form on:submit={handleSubmit} class="flex flex-col gap-2">
+    <div class="flex gap-2">
+      <label for="name" class="w-28 text-right">Name</label>
+      <input
+        type="text"
+        id="name"
+        placeholder="Poll Name"
+        bind:value={pollName}
+        class={tw`border rounded text-center px-2`}
+      />
+    </div>
+
+    <div class="flex gap-2">
+      <label for="start-time" class="w-28 text-right">Poll Start Time</label>
+      <Flatpickr
+        {options}
+        bind:value={pollStartTime}
+        bind:formattedValue
+        on:change={handleChange}
+        placeholder="Time"
+        name="start-time"
+        class="border rounded text-center px-2"
+      />
+    </div>
+
+    <div class="flex gap-2">
+      <label for="poll-time" class="w-28 text-right">Time limit</label>
+      <input type="number" class="border rounded text-center px-2" bind:value={pollTime} min={1} /> Minute(s)
+    </div>
+
+    <div class="flex justify-center">
+      <button type="submit" class="text-center rounded border px-4 py-2 text-lg">
+        Create Poll
+      </button>
+    </div>
+  </form>
 </main>
 
 <style>
