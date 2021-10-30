@@ -149,13 +149,14 @@
               />
               {#if canRemoveOption}
                 <button
+                  type="button"
                   class="w-6 border rounded bg-red-200 border-red-300"
                   on:click={() => removeOption(idx)}>-</button
                 >
               {/if}
             </span>
           {/each}
-          <button class="w-60 border rounded bg-green-200 border-green-300" on:click={addOption}
+          <button type="button" class="w-60 border rounded bg-green-200 border-green-300" on:click={addOption}
             >+ Add new option</button
           >
         </div>
