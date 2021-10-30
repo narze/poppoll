@@ -15,7 +15,7 @@
   import PollPage from "./PollPage.svelte"
   import baseUrl from "./lib/constants"
 
-  const url = "https://poppoll.vercel.app"
+  const url = "https://poppoll.pages.dev"
   const title = "PopPoll"
 
   const menuItems = [{ name: "Github", url: "https://github.com/narze/poppoll" }]
