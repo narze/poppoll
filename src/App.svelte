@@ -24,7 +24,9 @@
   let pollStartTime,
     formattedValue,
     pollName: string,
-    pollTime: number = 1
+    pollTime: number = 1,
+    pollOptions: string[] = ["", ""],
+    canRemoveOption: boolean = false
 
   const options = {
     enableTime: true,
@@ -45,6 +47,19 @@
 
     console.log(event.target.elements["date"].value)
   }
+
+  function addOption() {
+    pollOptions = [...pollOptions, ""]
+  }
+
+  function removeOption(index) {
+    if (!canRemoveOption) {
+      return
+    }
+    pollOptions = pollOptions.filter((_, i) => i !== index)
+  }
+
+  $: canRemoveOption = pollOptions.length > 2
 </script>
 
 <Kofi name="narze" label="Support Me" />
@@ -63,7 +78,7 @@
         id="name"
         placeholder="Poll Name"
         bind:value={pollName}
-        class={tw`border rounded text-center px-2`}
+        class={tw`w-60 border rounded text-center px-2`}
       />
     </div>
 
@@ -76,13 +91,38 @@
         on:change={handleChange}
         placeholder="Time"
         name="start-time"
-        class="border rounded text-center px-2"
+        class="w-60 border rounded text-center px-2"
       />
     </div>
 
     <div class="flex gap-2">
       <label for="poll-time" class="w-28 text-right">Time limit</label>
-      <input type="number" class="border rounded text-center px-2" bind:value={pollTime} min={1} /> Minute(s)
+      <input
+        type="number"
+        class="w-60 border rounded text-center px-2"
+        bind:value={pollTime}
+        min={1}
+      /> Minute(s)
+    </div>
+
+    <div class="flex gap-2">
+      <label for="poll-options" class="w-28 text-right">Poll Options</label>
+      <div class="flex flex-col gap-2">
+        {#each pollOptions as option, idx (idx)}
+          <span>
+            <input type="text" class="w-60 border rounded text-center px-2" bind:value={option} />
+            {#if canRemoveOption}
+              <button
+                class="w-6 border rounded bg-red-200 border-red-300"
+                on:click={() => removeOption(idx)}>-</button
+              >
+            {/if}
+          </span>
+        {/each}
+        <button class="w-60 border rounded bg-green-200 border-green-300" on:click={addOption}
+          >+ Add new option</button
+        >
+      </div>
     </div>
 
     <div class="flex justify-center">
