@@ -13,3 +13,11 @@ PopCat but it's poll!
 - Clone/fork this repository
 - `yarn` or `npm install`
 - `yarn dev` or `npm run dev`
+
+## Technologies Used
+
+- [Cloudflare Pages](https://pages.cloudflare.com)
+- [Cloudflare Workers](https://workers.cloudflare.com) (Project: https://github.com/narze/poppoll-worker)
+- [Supabase](https://supabase.io)
+- [Svelte](https://svelte.dev) via [Vite](https://vitejs.dev)
+- [Tailwind](https://tailwindcss.com) via [Twind](http://twind.dev)
