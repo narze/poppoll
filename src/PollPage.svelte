@@ -9,12 +9,20 @@
 
   export let id: string
   let poll
-  let options
+  let options: Array<{ id: string; name: string; count: number }>
+  let optionsCount: Array<{ id: string; name: string; count: number }>
   let hours, minutes, seconds
   let interval
   let isStarted
 
-  $: options = poll?.poll_option.map((option) => option.name) || []
+  $: options = poll?.poll_option || []
+  $: optionsCount = options.map((option) => {
+    return {
+      id: option.id,
+      name: option.name,
+      count: 0,
+    }
+  })
 
   $: if (poll) {
     interval = setInterval(() => {
@@ -48,16 +56,30 @@
 
     poll = data
   })()
+
+  function pop(id) {
+    return () => {
+      optionsCount = optionsCount.map((option) => {
+        if (option.id === id) {
+          return {
+            ...option,
+            count: option.count + 1,
+          }
+        } else {
+          return option
+        }
+      })
+    }
+  }
 </script>
 
 <main class="w-full h-screen flex flex-col gap-4 justify-center items-center">
-  <h1 class="text-3xl text-green-400 flex flex-col">Poll ID: {id}</h1>
-  <!-- {"key":"UaUNyY8CuQoBsSBWI4lvu","name":"poll with option","start_at":"2021-10-29T21:52:09.728+00:00","end_at":"2021-10-29T21:53:09.728+00:00","poll_option":[{"name":"aaaa"},{"name":"bbbb"},{"name":"cccc"}] -->
-  <!-- {JSON.stringify(poll)} -->
+  <h1 class="text-3xl text-green-400 flex flex-col">Poll : {`${poll?.name}`}</h1>
+
   {#if isStarted === false}
     {#if poll}
       {#each options as option}
-        <button disabled={true} class="rounded border px-2">{option}</button>
+        <button disabled={true} class="rounded border px-2 w-32">{option.name}</button>
       {/each}
 
       <h2 class="text-2xl">
@@ -67,7 +89,7 @@
   {:else if isStarted}
     {#if poll}
       {#each options as option}
-        <button class="rounded border px-2">{option}</button>
+        <button class="rounded border px-2 w-32" on:click={pop(option.id)}>{option.name}</button>
       {/each}
 
       <h2 class="text-2xl">
@@ -75,9 +97,6 @@
       </h2>
     {/if}
   {/if}
-
-  Start at : {poll?.start_at}
-  end at : {poll?.end_at}
 
   <p>Share URL</p>
   <input type="text" readonly={true} class="rounded border" value={$slocation.href} />
