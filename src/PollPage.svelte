@@ -94,6 +94,10 @@
   async function sendResult() {
     const payload = optionsCount.filter((option) => option.count > 0)
 
+    if (!payload.length) {
+      return
+    }
+
     optionsCountPending = [...optionsCount]
 
     optionsCount = optionsDefault
