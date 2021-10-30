@@ -15,7 +15,7 @@
   import PollPage from "./PollPage.svelte"
 
   const url = "https://single-page-svelte.vercel.app"
-  const title = "Single Page Svelte"
+  const title = "PopPoll"
 
   const menuItems = [{ name: "Github", url: "https://github.com/narze/single-page-svelte" }]
 
@@ -39,13 +39,6 @@
     },
   }
 
-  // $: console.log({ pollStartTime, formattedValue })
-
-  // function handleChange(event) {
-  //   const [selectedDates, dateStr] = event.detail
-  //   console.log({ selectedDates, dateStr })
-  // }
-
   async function handleSubmit(e) {
     e.preventDefault()
 
@@ -57,6 +50,7 @@
         name: pollName,
         start_at: pollStartTime,
         end_at: pollEndTime,
+        options: pollOptions.map((option) => ({ name: option })),
       },
       {
         headers: {
