@@ -17,6 +17,7 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/svelte": "^3.0.3",
     "@tsconfig/svelte": "^2.0.1",
+    "@types/axios": "^0.14.0",
     "@types/jest": "^27.0.2",
     "babel-jest": "^27.3.1",
     "jest": "^27.3.1",
@@ -32,6 +33,7 @@
     "vite": "^2.6.13"
   },
   "dependencies": {
+    "axios": "^0.24.0",
     "svelte-flatpickr": "^3.2.3",
     "svelte-share-buttons-component": "^1.4.0",
     "twind": "^0.16.16"

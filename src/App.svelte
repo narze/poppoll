@@ -1,6 +1,7 @@
 <script lang="ts">
   import "twind/shim"
   import { tw } from "twind"
+  import axios from "axios"
 
   import Flatpickr from "svelte-flatpickr"
   import "flatpickr/dist/flatpickr.css"
@@ -21,7 +22,7 @@
     "https://raw.githubusercontent.com/narze/timelapse/master/projects/single-page-svelte_home.png"
   const gtagId = null
 
-  let pollStartTime: Date,
+  let pollStartTime: Date = new Date(),
     formattedValue,
     pollName: string,
     pollTime: number = 1,
@@ -42,12 +43,24 @@
   //   console.log({ selectedDates, dateStr })
   // }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
 
     const pollEndTime = new Date(pollStartTime.getTime() + pollTime * 60000)
 
-    console.log({ pollName, pollEndTime, pollOptions, pollStartTime })
+    await axios.post(
+      "http://localhost:8787/polls",
+      {
+        name: pollName,
+        start_at: pollStartTime,
+        end_at: pollEndTime,
+      },
+      {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        },
+      }
+    )
   }
 
   function addOption() {
