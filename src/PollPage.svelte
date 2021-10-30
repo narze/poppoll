@@ -59,7 +59,7 @@
       } else if (isStarted) {
         sendResult()
       }
-    }, 1000)
+    }, 10000)
   }
 
   onDestroy(() => {
