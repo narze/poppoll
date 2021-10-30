@@ -15,12 +15,12 @@
   import PollPage from "./PollPage.svelte"
   import baseUrl from "./lib/constants"
 
-  const url = "https://single-page-svelte.vercel.app"
+  const url = "https://poppoll.vercel.app"
   const title = "PopPoll"
 
-  const menuItems = [{ name: "Github", url: "https://github.com/narze/single-page-svelte" }]
+  const menuItems = [{ name: "Github", url: "https://github.com/narze/poppoll" }]
 
-  const description = "Build a single page app with Svelte, quickly."
+  const description = "Create your poll but vote by click like popcat"
   const imageUrl =
     "https://raw.githubusercontent.com/narze/timelapse/master/projects/single-page-svelte_home.png"
   const gtagId = null
