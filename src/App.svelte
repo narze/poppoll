@@ -3,11 +3,11 @@
   import { tw } from "twind"
   import axios from "axios"
   import slocation from "slocation"
+  import dayjs from "dayjs"
+  import utc from "dayjs/plugin/utc"
 
-  import Flatpickr from "svelte-flatpickr"
-  import "flatpickr/dist/flatpickr.css"
+  dayjs.extend(utc)
 
-  import logo from "./assets/svelte.png"
   import Head from "./lib/Head.svelte"
   import Kofi from "./lib/Kofi.svelte"
   import Menu from "./lib/Menu.svelte"
@@ -25,19 +25,12 @@
   const gtagId = null
   const pollId = ""
 
-  let pollStartTime: Date = new Date(),
-    formattedValue,
+  let pollStartTime,
+    formattedPollStartTime = dayjs().local().format("YYYY-MM-DDTHH:mm"),
     pollName: string,
     pollTime: number = 1,
     pollOptions: string[] = ["", ""],
     canRemoveOption: boolean = false
-
-  const options = {
-    enableTime: true,
-    onChange(selectedDates, dateStr) {
-      console.log("flatpickr hook", selectedDates, dateStr)
-    },
-  }
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -76,6 +69,8 @@
   }
 
   $: canRemoveOption = pollOptions.length > 2
+
+  $: pollStartTime = new Date(formattedPollStartTime)
 </script>
 
 <Kofi name="narze" label="Support Me" />
@@ -103,12 +98,12 @@
 
       <div class="flex gap-2">
         <label for="start-time" class="w-28 text-right">Poll Start Time</label>
-        <Flatpickr
-          {options}
-          bind:value={pollStartTime}
-          bind:formattedValue
-          placeholder="Time"
+
+        <input
+          type="datetime-local"
+          id="start-time"
           name="start-time"
+          bind:value={formattedPollStartTime}
           class="w-60 border rounded text-center px-2"
         />
       </div>

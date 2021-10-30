@@ -13,7 +13,7 @@
   let optionsCount: Array<{ id: number; name: string; count: number }>
   let hours, minutes, seconds
   let interval, sendResultInterval
-  let isStarted
+  let isStarted, isEnded
 
   $: options = poll?.poll_option || []
   $: options = options.sort((a, b) => {
@@ -29,12 +29,16 @@
   $: optionsCountPending = optionsDefault
 
   $: if (poll) {
+    const start_at = dayjs(poll.start_at)
+    const end_at = dayjs(poll.end_at)
+
     interval = setInterval(() => {
       const now = dayjs()
-      const start_at = dayjs(poll.start_at)
-      const end_at = dayjs(poll.end_at)
 
-      if (now >= start_at) {
+      if (now >= end_at) {
+        isEnded = true
+        clearInterval(interval)
+      } else if (now >= start_at) {
         isStarted = true
         hours = Math.abs(end_at.diff(now, "hour"))
         minutes = Math.abs(end_at.diff(now, "minute") % 60)
@@ -48,11 +52,10 @@
     }, 1000)
 
     sendResultInterval = setInterval(() => {
-      const now = dayjs()
-      const start_at = dayjs(poll.start_at)
-      const end_at = dayjs(poll.end_at)
-
-      if (now >= start_at) {
+      if (isEnded) {
+        sendResult()
+        clearInterval(sendResultInterval)
+      } else if (isStarted) {
         sendResult()
       }
     }, 1000)
@@ -116,8 +119,17 @@
   <h1 class="text-3xl text-green-400 flex flex-col">Poll : {`${poll?.name}`}</h1>
 
   <!-- {JSON.stringify(optionsCount)} -->
+  {#if isEnded}
+    {#if poll}
+      {#each options as option, idx (idx)}
+        <button class="rounded border px-2 w-32" disabled={true}
+          >{option.name} : {option.count}</button
+        >
+      {/each}
 
-  {#if isStarted === false}
+      <h2 class="text-2xl">Poll Ended</h2>
+    {/if}
+  {:else if isStarted === false}
     {#if poll}
       {#each options as option}
         <button disabled={true} class="rounded border px-2 w-32">{option.name}</button>
