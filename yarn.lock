@@ -3582,6 +3582,13 @@ slash@^3.0.0:
   resolved "https://registry.yarnpkg.com/slash/-/slash-3.0.0.tgz#6539be870c165adbd5240220dbe361f1bc4d4634"
   integrity sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==
 
+slocation@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/slocation/-/slocation-1.5.0.tgz#5e434cbf97fc4bcf7a954fba1185b4492f9dfcdf"
+  integrity sha512-YW06BUxVtQHUmlwdr5rJNIaot0z95REj3GwtaJYgXqAnDiQUATjr2QPOK0K7tHavc/FKsZASG224FbR/6nOSlA==
+  dependencies:
+    svelte latest
+
 sorcery@^0.10.0:
   version "0.10.0"
   resolved "https://registry.yarnpkg.com/sorcery/-/sorcery-0.10.0.tgz#8ae90ad7d7cb05fc59f1ab0c637845d5c15a52b7"
@@ -3773,7 +3780,7 @@ svelte-share-buttons-component@^1.4.0:
     from "^0.1.7"
     import "^0.0.6"
 
-svelte@^3.44.0:
+svelte@^3.44.0, svelte@latest:
   version "3.44.0"
   resolved "https://registry.yarnpkg.com/svelte/-/svelte-3.44.0.tgz#e6176cb3ad93846ddb4140e93f43098136b23f3b"
   integrity sha512-zWACSJBSncGiDvFfYOMFGNV5zDLOlyhftmO5yOZ0lEtQMptpElaRtl39MWz1+lYCpwUq4F3Q2lTzI9TrTL+eMA==

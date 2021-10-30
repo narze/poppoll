@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "axios": "^0.24.0",
+    "slocation": "^1.5.0",
     "svelte-flatpickr": "^3.2.3",
     "svelte-share-buttons-component": "^1.4.0",
     "twind": "^0.16.16"

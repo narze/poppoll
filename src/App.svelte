@@ -2,6 +2,7 @@
   import "twind/shim"
   import { tw } from "twind"
   import axios from "axios"
+  import slocation from "slocation"
 
   import Flatpickr from "svelte-flatpickr"
   import "flatpickr/dist/flatpickr.css"
@@ -11,6 +12,7 @@
   import Kofi from "./lib/Kofi.svelte"
   import Menu from "./lib/Menu.svelte"
   import Social from "./lib/Social.svelte"
+  import PollPage from "./PollPage.svelte"
 
   const url = "https://single-page-svelte.vercel.app"
   const title = "Single Page Svelte"
@@ -21,6 +23,7 @@
   const imageUrl =
     "https://raw.githubusercontent.com/narze/timelapse/master/projects/single-page-svelte_home.png"
   const gtagId = null
+  const pollId = ""
 
   let pollStartTime: Date = new Date(),
     formattedValue,
@@ -48,7 +51,7 @@
 
     const pollEndTime = new Date(pollStartTime.getTime() + pollTime * 60000)
 
-    await axios.post(
+    const { data } = await axios.post(
       "http://localhost:8787/polls",
       {
         name: pollName,
@@ -61,6 +64,10 @@
         },
       }
     )
+
+    const key = data.key
+
+    location.hash = `#/polls/${key}`
   }
 
   function addOption() {
@@ -83,68 +90,72 @@
 <Head {title} {description} {url} {imageUrl} {gtagId} />
 
 <main class="w-full h-screen flex flex-col gap-4 justify-center items-center">
-  <h1 class="text-6xl text-green-400 flex flex-col">PopPoll</h1>
+  {#if $slocation.hash.startsWith("#/polls/")}
+    <PollPage id={$slocation.hash.replace("#/polls/", "")} />
+  {:else}
+    <h1 class="text-6xl text-green-400 flex flex-col">PopPoll</h1>
 
-  <form on:submit={handleSubmit} class="flex flex-col gap-2">
-    <div class="flex gap-2">
-      <label for="name" class="w-28 text-right">Name</label>
-      <input
-        type="text"
-        id="name"
-        placeholder="Poll Name"
-        bind:value={pollName}
-        class={tw`w-60 border rounded text-center px-2`}
-      />
-    </div>
-
-    <div class="flex gap-2">
-      <label for="start-time" class="w-28 text-right">Poll Start Time</label>
-      <Flatpickr
-        {options}
-        bind:value={pollStartTime}
-        bind:formattedValue
-        placeholder="Time"
-        name="start-time"
-        class="w-60 border rounded text-center px-2"
-      />
-    </div>
-
-    <div class="flex gap-2">
-      <label for="poll-time" class="w-28 text-right">Time limit</label>
-      <input
-        type="number"
-        class="w-60 border rounded text-center px-2"
-        bind:value={pollTime}
-        min={1}
-      /> Minute(s)
-    </div>
-
-    <div class="flex gap-2">
-      <label for="poll-options" class="w-28 text-right">Poll Options</label>
-      <div class="flex flex-col gap-2">
-        {#each pollOptions as option, idx (idx)}
-          <span>
-            <input type="text" class="w-60 border rounded text-center px-2" bind:value={option} />
-            {#if canRemoveOption}
-              <button
-                class="w-6 border rounded bg-red-200 border-red-300"
-                on:click={() => removeOption(idx)}>-</button
-              >
-            {/if}
-          </span>
-        {/each}
-        <button class="w-60 border rounded bg-green-200 border-green-300" on:click={addOption}
-          >+ Add new option</button
-        >
+    <form on:submit={handleSubmit} class="flex flex-col gap-2">
+      <div class="flex gap-2">
+        <label for="name" class="w-28 text-right">Name</label>
+        <input
+          type="text"
+          id="name"
+          placeholder="Poll Name"
+          bind:value={pollName}
+          class={tw`w-60 border rounded text-center px-2`}
+        />
       </div>
-    </div>
 
-    <div class="flex justify-center">
-      <button type="submit" class="text-center rounded border px-4 py-2 text-lg">
-        Create Poll
-      </button>
-    </div>
-  </form>
+      <div class="flex gap-2">
+        <label for="start-time" class="w-28 text-right">Poll Start Time</label>
+        <Flatpickr
+          {options}
+          bind:value={pollStartTime}
+          bind:formattedValue
+          placeholder="Time"
+          name="start-time"
+          class="w-60 border rounded text-center px-2"
+        />
+      </div>
+
+      <div class="flex gap-2">
+        <label for="poll-time" class="w-28 text-right">Time limit</label>
+        <input
+          type="number"
+          class="w-60 border rounded text-center px-2"
+          bind:value={pollTime}
+          min={1}
+        /> Minute(s)
+      </div>
+
+      <div class="flex gap-2">
+        <label for="poll-options" class="w-28 text-right">Poll Options</label>
+        <div class="flex flex-col gap-2">
+          {#each pollOptions as option, idx (idx)}
+            <span>
+              <input type="text" class="w-60 border rounded text-center px-2" bind:value={option} />
+              {#if canRemoveOption}
+                <button
+                  class="w-6 border rounded bg-red-200 border-red-300"
+                  on:click={() => removeOption(idx)}>-</button
+                >
+              {/if}
+            </span>
+          {/each}
+          <button class="w-60 border rounded bg-green-200 border-green-300" on:click={addOption}
+            >+ Add new option</button
+          >
+        </div>
+      </div>
+
+      <div class="flex justify-center">
+        <button type="submit" class="text-center rounded border px-4 py-2 text-lg">
+          Create Poll
+        </button>
+      </div>
+    </form>
+  {/if}
 </main>
 
 <style>
