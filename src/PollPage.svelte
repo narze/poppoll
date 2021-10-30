@@ -9,20 +9,24 @@
 
   export let id: string
   let poll
-  let options: Array<{ id: string; name: string; count: number }>
-  let optionsCount: Array<{ id: string; name: string; count: number }>
+  let options: Array<{ id: number; name: string; count: number }>
+  let optionsCount: Array<{ id: number; name: string; count: number }>
   let hours, minutes, seconds
-  let interval
+  let interval, sendResultInterval
   let isStarted
 
   $: options = poll?.poll_option || []
-  $: optionsCount = options.map((option) => {
+  $: options = options.sort((a, b) => {
+    return a.id - b.id
+  })
+  $: optionsDefault = (poll?.poll_option || []).map((option) => {
     return {
-      id: option.id,
-      name: option.name,
+      ...option,
       count: 0,
     }
   })
+  $: optionsCount = optionsDefault
+  $: optionsCountPending = optionsDefault
 
   $: if (poll) {
     interval = setInterval(() => {
@@ -42,10 +46,21 @@
         seconds = Math.abs(start_at.diff(now, "second") % 60)
       }
     }, 1000)
+
+    sendResultInterval = setInterval(() => {
+      const now = dayjs()
+      const start_at = dayjs(poll.start_at)
+      const end_at = dayjs(poll.end_at)
+
+      if (now >= start_at) {
+        sendResult()
+      }
+    }, 1000)
   }
 
   onDestroy(() => {
     clearInterval(interval)
+    clearInterval(sendResultInterval)
   })
   ;(async () => {
     const { data } = await axios.get(`http://localhost:8787/polls/${id}`, {
@@ -71,10 +86,36 @@
       })
     }
   }
+
+  async function sendResult() {
+    const payload = optionsCount.filter((option) => option.count > 0)
+
+    optionsCountPending = [...optionsCount]
+
+    optionsCount = optionsDefault
+
+    const { data } = await axios.post(
+      `http://localhost:8787/polls/${id}/pop`,
+      {
+        data: payload,
+      },
+      {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        },
+      }
+    )
+
+    optionsCountPending = optionsDefault
+
+    options = data?.poll_option || []
+  }
 </script>
 
 <main class="w-full h-screen flex flex-col gap-4 justify-center items-center">
   <h1 class="text-3xl text-green-400 flex flex-col">Poll : {`${poll?.name}`}</h1>
+
+  <!-- {JSON.stringify(optionsCount)} -->
 
   {#if isStarted === false}
     {#if poll}
@@ -88,8 +129,12 @@
     {/if}
   {:else if isStarted}
     {#if poll}
-      {#each options as option}
-        <button class="rounded border px-2 w-32" on:click={pop(option.id)}>{option.name}</button>
+      {#each options as option, idx (idx)}
+        <button class="rounded border px-2 w-32" on:click={pop(option.id)}
+          >{option.name} : {option.count +
+            optionsCount[idx]?.count +
+            optionsCountPending[idx]?.count}</button
+        >
       {/each}
 
       <h2 class="text-2xl">
