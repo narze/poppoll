@@ -5,7 +5,7 @@
   import dayjs from "dayjs"
   import relativeTime from "dayjs/plugin/relativeTime"
   import { allowOrigin, workersUrl } from "./lib/constants"
-
+  import popSound from "./assets/pop.ogg"
   dayjs.extend(relativeTime)
 
   export let id: string
@@ -15,6 +15,7 @@
   let hours, minutes, seconds
   let interval, sendResultInterval
   let isStarted, isEnded
+  let popAudio = new Audio(popSound)
 
   $: options = poll?.poll_option || []
   $: options = options.sort((a, b) => {
@@ -78,6 +79,7 @@
 
   function pop(id) {
     return () => {
+      popAudio.play()
       optionsCount = optionsCount.map((option) => {
         if (option.id === id) {
           return {
