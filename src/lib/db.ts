@@ -1,5 +1,4 @@
 import { createClient } from "@supabase/supabase-js"
-import { writable } from "svelte/store"
 
 const supabase = createClient(
   "https://rntidcyilmxescqtmwww.supabase.co",

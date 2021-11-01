@@ -3,7 +3,7 @@
   import slocation from "slocation"
   import dayjs from "dayjs"
   import relativeTime from "dayjs/plugin/relativeTime"
-  import popSound from "./assets/pop.ogg"
+  import { Howl } from "howler"
   import db from "./lib/db"
   dayjs.extend(relativeTime)
 
@@ -15,7 +15,16 @@
   let hours, minutes, seconds
   let interval, sendResultInterval
   let isStarted, isEnded
-  let popAudio = new Audio(popSound)
+  let popIdx = 0
+
+  const audioPath = "https://storage.googleapis.com/assets.prayut.click/sounds"
+
+  const pops = [
+    new Howl({ src: [audioPath + "/pop1.ogg", audioPath + "/pop1.mp3"] }),
+    new Howl({ src: [audioPath + "/pop2.ogg", audioPath + "/pop2.mp3"] }),
+    new Howl({ src: [audioPath + "/pop3.ogg", audioPath + "/pop3.mp3"] }),
+    new Howl({ src: [audioPath + "/pop4.ogg", audioPath + "/pop4.mp3"] }),
+  ]
 
   $: options = poll?.poll_option || []
   $: options = options.sort((a, b) => {
@@ -75,7 +84,8 @@
 
   function pop(id) {
     return () => {
-      popAudio.play()
+      pops[popIdx++ % 4].play()
+
       optionsCount = optionsCount.map((option) => {
         if (option.id === id) {
           return {
@@ -136,7 +146,7 @@
       {#if poll}
         {#each options as option, idx (idx)}
           <div
-            class="cursor-pointer rounded border text-center md:text-4xl px-2 w-32"
+            class="cursor-pointer select-none rounded border-2 text-center md:text-4xl px-4 py-2 w-32"
             on:click={pop(option.id)}
           >
             {option.name} : {option.count +
