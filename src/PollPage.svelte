@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { onDestroy } from "svelte"
-  import axios from "axios"
+  import { onMount, onDestroy } from "svelte"
   import slocation from "slocation"
   import dayjs from "dayjs"
   import relativeTime from "dayjs/plugin/relativeTime"
-  import { allowOrigin, workersUrl } from "./lib/constants"
   import popSound from "./assets/pop.ogg"
+  import db from "./lib/db"
   dayjs.extend(relativeTime)
 
   export let id: string
+  let loading = true
   let poll
   let options: Array<{ id: number; name: string; count: number }>
   let optionsCount: Array<{ id: number; name: string; count: number }>
@@ -60,22 +60,18 @@
       } else if (isStarted) {
         sendResult()
       }
-    }, 5000)
+    }, 2000)
   }
+
+  onMount(async () => {
+    poll = await db.polls.get(id)
+    loading = false
+  })
 
   onDestroy(() => {
     clearInterval(interval)
     clearInterval(sendResultInterval)
   })
-  ;(async () => {
-    const { data } = await axios.get(`${workersUrl}/polls/${id}`, {
-      headers: {
-        "Access-Control-Allow-Origin": allowOrigin,
-      },
-    })
-
-    poll = data
-  })()
 
   function pop(id) {
     return () => {
@@ -94,74 +90,65 @@
   }
 
   async function sendResult() {
-    const payload = optionsCount.filter((option) => option.count > 0)
-
-    if (!payload.length) {
+    if (document.hidden) {
       return
     }
 
+    const payload = optionsCount.filter((option) => option.count > 0)
     optionsCountPending = [...optionsCount]
-
     optionsCount = optionsDefault
 
-    const { data } = await axios.post(
-      `${workersUrl}/polls/${id}/pop`,
-      {
-        data: payload,
-      },
-      {
-        headers: {
-          "Access-Control-Allow-Origin": allowOrigin,
-        },
-      }
-    )
-
+    const result = await db.polls.upvote(id, payload)
     optionsCountPending = optionsDefault
-
-    options = data?.poll_option || []
+    options = result?.poll_option || []
   }
 </script>
 
-<main class="w-full h-screen  flex flex-col gap-4 justify-center items-center">
-  <h1 class="text-3xl md:text-6xl text-green-400 flex flex-col">Poll : {`${poll?.name}`}</h1>
+<main class="w-full h-screen flex flex-col gap-4 justify-center items-center">
+  {#if loading}
+    Loading...
+  {:else}
+    <h1 class="text-3xl md:text-6xl text-green-400 flex flex-col">Poll : {`${poll?.name}`}</h1>
 
-  <!-- {JSON.stringify(optionsCount)} -->
-  {#if isEnded}
-    {#if poll}
-      {#each options as option, idx (idx)}
-        <button class="rounded border md:text-3xl px-2 w-32" disabled={true}
-          >{option.name} : {option.count}</button
-        >
-      {/each}
+    <!-- {JSON.stringify(optionsCount)} -->
+    {#if isEnded}
+      {#if poll}
+        {#each options as option, idx (idx)}
+          <button class="rounded border md:text-3xl px-2 w-32" disabled={true}
+            >{option.name} : {option.count}</button
+          >
+        {/each}
 
-      <h2 class="text-2xl md:text-6xl">Poll Ended</h2>
+        <h2 class="text-2xl md:text-6xl">Poll Ended</h2>
+      {/if}
+    {:else if isStarted === false}
+      {#if poll}
+        {#each options as option}
+          <button disabled={true} class="rounded md:text-3xl border px-2 w-32">{option.name}</button
+          >
+        {/each}
+
+        <h2 class="text-2xl md:text-3xl">
+          Poll will start in {hours} hours {minutes} minutes {seconds} seconds
+        </h2>
+      {/if}
+    {:else if isStarted}
+      {#if poll}
+        {#each options as option, idx (idx)}
+          <button class="rounded border md:text-4xl px-2 w-32" on:click={pop(option.id)}
+            >{option.name} : {option.count +
+              optionsCount[idx]?.count +
+              optionsCountPending[idx]?.count}</button
+          >
+        {/each}
+
+        <h2 class="text-2xl md:text-4xl">
+          Poll will end in {hours} hours {minutes} minutes {seconds} seconds
+        </h2>
+      {/if}
     {/if}
-  {:else if isStarted === false}
-    {#if poll}
-      {#each options as option}
-        <button disabled={true} class="rounded md:text-3xl border px-2 w-32">{option.name}</button>
-      {/each}
 
-      <h2 class="text-2xl md:text-3xl">
-        Poll will start in {hours} hours {minutes} minutes {seconds} seconds
-      </h2>
-    {/if}
-  {:else if isStarted}
-    {#if poll}
-      {#each options as option, idx (idx)}
-        <button class="rounded border md:text-4xl px-2 w-32" on:click={pop(option.id)}
-          >{option.name} : {option.count +
-            optionsCount[idx]?.count +
-            optionsCountPending[idx]?.count}</button
-        >
-      {/each}
-
-      <h2 class="text-2xl md:text-4xl">
-        Poll will end in {hours} hours {minutes} minutes {seconds} seconds
-      </h2>
-    {/if}
+    <p>Share URL</p>
+    <input type="text" readonly={true} class="rounded border md:text-3xl" value={$slocation.href} />
   {/if}
-
-  <p>Share URL</p>
-  <input type="text" readonly={true} class="rounded border md:text-3xl" value={$slocation.href} />
 </main>
