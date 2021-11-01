@@ -150,5 +150,7 @@
 
     <p>Share URL</p>
     <input type="text" readonly={true} class="rounded border md:text-3xl" value={$slocation.href} />
+
+    <p><a href="/">Home</a></p>
   {/if}
 </main>
