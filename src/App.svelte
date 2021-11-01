@@ -100,9 +100,9 @@
   {#if $slocation.hash.startsWith("#/polls/")}
     <PollPage id={$slocation.hash.replace("#/polls/", "")} />
   {:else}
-    <h1 class="text-6xl text-green-400 flex flex-col">PopPoll</h1>
+    <h1 class="text-6xl md:text-8xl md:my-8 text-green-400 flex flex-col">PopPoll</h1>
 
-    <form on:submit={handleSubmit} class="flex flex-col gap-2">
+    <form on:submit={handleSubmit} class="flex flex-col gap-2 md:text-lg">
       <div class="flex gap-2">
         <label for="name" class="w-28 text-right">Name</label>
         <input
