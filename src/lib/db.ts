@@ -47,7 +47,6 @@ export default {
             option_id: id,
             increment_count: count,
           })
-          console.log({ upvoteError, upvoteData })
 
           return
         })

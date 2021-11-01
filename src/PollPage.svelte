@@ -135,11 +135,14 @@
     {:else if isStarted}
       {#if poll}
         {#each options as option, idx (idx)}
-          <button class="rounded border md:text-4xl px-2 w-32" on:click={pop(option.id)}
-            >{option.name} : {option.count +
-              optionsCount[idx]?.count +
-              optionsCountPending[idx]?.count}</button
+          <div
+            class="cursor-pointer rounded border text-center md:text-4xl px-2 w-32"
+            on:click={pop(option.id)}
           >
+            {option.name} : {option.count +
+              optionsCount[idx]?.count +
+              optionsCountPending[idx]?.count}
+          </div>
         {/each}
 
         <h2 class="text-2xl md:text-4xl">
